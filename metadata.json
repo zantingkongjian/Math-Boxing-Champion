@@ -1,5 +1,10 @@
 {
   "name": "Math Boxing Champion",
-  "description": "An interactive educational game for 2nd graders where solving multiplication and division problems lets you box against an AI opponent.",
+  "short_name": "数学拳击",
+  "description": "通过解决数学题来击败机器人的交互式拳击游戏，适合小学生提升算术能力。",
+  "theme_color": "#0f172a",
+  "background_color": "#0f172a",
+  "display": "standalone",
+  "orientation": "portrait",
   "requestFramePermissions": []
 }

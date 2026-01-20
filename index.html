@@ -1,32 +1,66 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>数学拳击赛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#0f172a" />
+    <title>数学拳击冠军 - Math Boxing Champion</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-        20%, 40%, 60%, 80% { transform: translateX(5px); }
+      :root {
+        --app-height: 100%;
       }
-      .animate-shake {
-        animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+      html, body {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        height: 100dvh; /* 使用动态视口高度 */
+        background: #0f172a;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        overflow: hidden; /* 防止橡皮筋效应 */
       }
-      @keyframes popIn {
-        0% { transform: scale(0.5); opacity: 0; }
-        100% { transform: scale(1); opacity: 1; }
+      #root {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
       }
-      .animate-pop {
-        animation: popIn 0.3s ease-out forwards;
+      .no-bounce {
+        overscroll-behavior: none;
       }
-      @keyframes idle {
-        0%, 100% { transform: translateY(0) scale(1); }
-        50% { transform: translateY(-4px) scale(1.02); }
+      @keyframes shake-screen {
+        0%, 100% { transform: translate(0, 0); }
+        25% { transform: translate(-4px, 4px); }
+        50% { transform: translate(4px, -4px); }
+        75% { transform: translate(-4px, -4px); }
       }
-      .animate-idle {
-        animation: idle 2.5s ease-in-out infinite;
+      .shake-anim {
+        animation: shake-screen 0.3s ease-in-out;
+      }
+      @keyframes floatUp {
+        0% { transform: translateY(0) scale(0.8); opacity: 0; }
+        20% { opacity: 1; transform: translateY(-20px) scale(1.1); }
+        100% { transform: translateY(-120px) scale(1); opacity: 0; }
+      }
+      .animate-float-up {
+        animation: floatUp 0.8s ease-out forwards;
+      }
+      .premium-glass {
+        background: rgba(30, 41, 59, 0.75);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      /* 针对超短屏幕的微调 */
+      @media (max-height: 600px) {
+        .game-header { padding-top: 0.5rem !important; }
+        .math-card { padding: 0.75rem !important; }
+        .math-question { font-size: 2rem !important; }
       }
     </style>
   <script type="importmap">
@@ -40,7 +74,7 @@
 }
 </script>
 </head>
-  <body class="bg-slate-900 text-white overflow-hidden">
+  <body class="bg-slate-900 text-white selection:bg-blue-500">
     <div id="root"></div>
   </body>
 </html>

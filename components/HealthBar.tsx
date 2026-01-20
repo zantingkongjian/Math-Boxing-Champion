@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 interface HealthBarProps {
@@ -10,25 +11,26 @@ interface HealthBarProps {
 const HealthBar: React.FC<HealthBarProps> = ({ current, max, isPlayer, label }) => {
   const percentage = Math.max(0, Math.min(100, (current / max) * 100));
   
-  let colorClass = 'bg-green-500';
-  if (percentage < 50) colorClass = 'bg-yellow-500';
-  if (percentage < 25) colorClass = 'bg-red-600';
+  let colorClass = 'from-green-400 via-green-500 to-emerald-600 shadow-[0_0_10px_rgba(34,197,94,0.4)]';
+  if (percentage < 50) colorClass = 'from-yellow-400 via-orange-500 to-orange-600 shadow-[0_0_10px_rgba(249,115,22,0.4)]';
+  if (percentage < 25) colorClass = 'from-red-500 via-red-600 to-rose-700 shadow-[0_0_10px_rgba(225,29,72,0.4)]';
 
   return (
-    <div className={`flex-1 max-w-[45%] ${isPlayer ? 'mr-auto' : 'ml-auto text-right'}`}>
-      <div className="flex justify-between items-end mb-1 px-1">
-        <span className={`font-bold uppercase tracking-wider text-xs sm:text-sm ${isPlayer ? 'text-blue-300' : 'text-red-300'}`}>
+    <div className={`flex-1 flex flex-col ${isPlayer ? 'items-start' : 'items-end'} min-w-0`}>
+      <div className={`flex w-full justify-between items-baseline mb-1 px-0.5 ${isPlayer ? 'flex-row' : 'flex-row-reverse'}`}>
+        <span className={`font-black text-[9px] sm:text-xs tracking-wider uppercase italic ${isPlayer ? 'text-blue-400' : 'text-red-400'} truncate`}>
           {label}
         </span>
-        <span className="text-xs sm:text-sm font-mono text-gray-400">{current}/{max}</span>
+        <span className="text-[8px] sm:text-xs font-mono font-bold text-slate-500 ml-1">
+          {Math.ceil(current)} / {max}
+        </span>
       </div>
-      <div className="h-4 sm:h-6 w-full bg-slate-800 rounded-full border-2 border-slate-700 overflow-hidden relative shadow-inner">
+      <div className="h-2.5 sm:h-4 w-full bg-slate-950 rounded-full border border-slate-700/50 p-[1.5px] shadow-inner overflow-hidden">
         <div 
-          className={`h-full transition-all duration-500 ease-out ${colorClass} relative`}
+          className={`h-full rounded-full transition-all duration-700 cubic-bezier(0.34, 1.56, 0.64, 1) bg-gradient-to-r ${colorClass} relative`}
           style={{ width: `${percentage}%` }}
         >
-            <div className="absolute top-0 right-0 bottom-0 w-1 bg-white opacity-30"></div>
-            <div className="absolute top-0 left-0 w-full h-1/2 bg-white opacity-20 rounded-t-full"></div>
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.2)_50%,transparent_100%)] animate-[shimmer_2s_infinite]"></div>
         </div>
       </div>
     </div>
