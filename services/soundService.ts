@@ -34,29 +34,47 @@ export const playTextToSpeech = (text: string) => {
     stopTTS();
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.1; 
+    utterance.rate = 1.0; 
     utterance.pitch = 1.0; 
     utterance.lang = 'zh-CN'; 
     
-    // Improved Voice Selection Strategy
+    // Improved Voice Selection Strategy for Mandarin Only
     const voices = window.speechSynthesis.getVoices();
     
-    // Priority: 
-    // 1. "Google" Chinese (usually very natural)
-    // 2. "Microsoft" Chinese
-    // 3. Any Chinese
-    let selectedVoice = voices.find(v => v.name.includes("Google") && (v.lang.includes("zh") || v.lang.includes("CN")));
+    // Filter out Cantonese (HK) and Taiwan voices
+    const isMandarin = (v: SpeechSynthesisVoice) => {
+        const lang = v.lang.toLowerCase();
+        const name = v.name.toLowerCase();
+        // Check for zh-CN specifically, avoid HK and TW
+        const isZh = lang.includes("zh");
+        const isNotCantonese = !lang.includes("hk") && !name.includes("cantonese") && !name.includes("hong kong");
+        const isNotTaiwan = !lang.includes("tw") && !name.includes("taiwan");
+        return isZh && isNotCantonese && isNotTaiwan;
+    };
+
+    const mandarinVoices = voices.filter(isMandarin);
+    
+    // Priority:
+    // 1. Google Mandarin (zh-CN)
+    // 2. Microsoft Xiaoxiao/Yunxi (Commonly used Mandarin)
+    // 3. Any remaining zh-CN voice
+    let selectedVoice = mandarinVoices.find(v => v.name.includes("Google") && v.lang.includes("CN"));
     
     if (!selectedVoice) {
-        selectedVoice = voices.find(v => v.name.includes("Microsoft") && (v.lang.includes("zh") || v.lang.includes("CN")));
+        selectedVoice = mandarinVoices.find(v => v.name.includes("Microsoft") || v.name.includes("Xiaoxiao") || v.name.includes("Yunxi"));
     }
     
     if (!selectedVoice) {
-        selectedVoice = voices.find(v => v.lang.includes("zh") || v.lang.includes("CN"));
+        selectedVoice = mandarinVoices.find(v => v.lang.includes("CN") || v.lang === "zh-CN");
+    }
+    
+    if (!selectedVoice && mandarinVoices.length > 0) {
+        selectedVoice = mandarinVoices[0];
     }
 
     if (selectedVoice) {
         utterance.voice = selectedVoice;
+        utterance.lang = selectedVoice.lang; // Use the specific sub-lang if found
     }
 
     window.speechSynthesis.speak(utterance);
@@ -70,7 +88,7 @@ export const playPunchSound = (isCrit = false) => {
   const gain = ctx.createGain();
 
   // Thud
-  osc.type = isCrit ? 'square' : 'triangle'; // Square wave for crit punch sounds "heavier"
+  osc.type = isCrit ? 'square' : 'triangle'; 
   osc.frequency.setValueAtTime(isCrit ? 100 : 150, ctx.currentTime);
   osc.frequency.exponentialRampToValueAtTime(0.01, ctx.currentTime + (isCrit ? 0.3 : 0.15));
 
@@ -91,7 +109,6 @@ export const playCorrectSound = (isCombo = false) => {
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
 
-  // High pitch ding
   osc.type = 'sine';
   osc.frequency.setValueAtTime(isCombo ? 1000 : 800, ctx.currentTime);
   osc.frequency.exponentialRampToValueAtTime(isCombo ? 1500 : 1200, ctx.currentTime + 0.1);
@@ -113,7 +130,6 @@ export const playWrongSound = () => {
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
 
-  // Low buzz
   osc.type = 'sawtooth';
   osc.frequency.setValueAtTime(150, ctx.currentTime);
   osc.frequency.linearRampToValueAtTime(100, ctx.currentTime + 0.3);
@@ -135,7 +151,7 @@ export const playWinSound = () => {
     stopTTS(); 
 
     const now = ctx.currentTime;
-    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51]; // Extended arpeggio
+    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51]; 
     
     notes.forEach((freq, i) => {
         const osc = ctx.createOscillator();
