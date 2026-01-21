@@ -7,7 +7,7 @@ import { initAudio, playCorrectSound, playWrongSound, playPunchSound, playWinSou
 import HealthBar from './components/HealthBar';
 import Boxer from './components/Boxer';
 import RingBackground from './components/RingBackground';
-import { Trophy, XCircle, Play, RefreshCw, Flame, Swords, Zap, CheckCircle2, Star, Target } from 'lucide-react';
+import { Trophy, XCircle, Play, RefreshCw, Flame, Swords, Zap, CheckCircle2, Star, Target, ShieldCheck } from 'lucide-react';
 
 const INITIAL_PLAYER_HP = 20;
 
@@ -186,79 +186,111 @@ export default function App() {
 
   const renderMenu = () => (
     <div className="flex-1 flex flex-col items-center justify-center p-6 relative bg-[#070b14] overflow-hidden">
-      {/* 增强背景动态效果 */}
+      {/* 增强动态背景 */}
       <RingBackground />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.1)_0%,transparent_70%)] pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.15)_0%,transparent_60%)] pointer-events-none animate-pulse"></div>
 
-      <div className="z-10 relative flex flex-col items-center max-w-sm sm:max-w-lg w-full">
-        {/* 顶部荣誉徽章 */}
-        <div className="mb-6 animate-bounce">
-           <div className="p-3 rounded-full bg-gradient-to-b from-yellow-300 to-yellow-600 shadow-[0_0_30px_rgba(234,179,8,0.4)]">
-             <Trophy className="text-white w-10 h-10" />
-           </div>
+      <div className="z-10 relative flex flex-col items-center max-w-sm sm:max-w-lg w-full animate-pop-in">
+        {/* 顶部动态徽章 */}
+        <div className="mb-6 relative">
+          <div className="absolute inset-0 bg-yellow-500/30 blur-2xl rounded-full animate-ping"></div>
+          <div className="relative p-4 rounded-full bg-gradient-to-br from-yellow-300 via-yellow-500 to-orange-600 shadow-[0_10px_20px_rgba(234,179,8,0.5)] border-2 border-white/20">
+            <Trophy className="text-white w-10 h-10 drop-shadow-md" />
+          </div>
         </div>
 
-        {/* 标题部分 - 冲击力更强 */}
-        <div className="text-center mb-8 relative">
-          <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-48 h-48 bg-blue-500/10 blur-[60px] rounded-full"></div>
-          <h1 className="text-6xl sm:text-9xl font-black italic tracking-tighter leading-none mb-1">
-            <span className="text-white block drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">数学</span>
-            <span className="text-blue-500 block -mt-2 drop-shadow-[0_8px_15px_rgba(59,130,246,0.5)] transform -skew-x-12">拳击</span>
+        {/* 核心标题：分层 + 倾斜 + 阴影 */}
+        <div className="text-center mb-10 relative">
+          <h1 className="flex flex-col items-center select-none">
+            <span className="text-6xl sm:text-8xl font-black text-white italic tracking-tighter drop-shadow-[0_10px_10px_rgba(0,0,0,0.8)] leading-none">
+              数学
+            </span>
+            <span className="text-7xl sm:text-[9rem] font-black text-blue-500 italic tracking-tighter leading-none -mt-3 transform -skew-x-12 drop-shadow-[0_15px_30px_rgba(59,130,246,0.6)]">
+              拳击
+            </span>
           </h1>
-          <div className="inline-block mt-4 px-6 py-1.5 bg-white/5 backdrop-blur-md rounded-full border border-white/10">
-            <p className="text-blue-200 text-xs sm:text-lg font-bold tracking-widest uppercase italic">极速口算 · 冠军之路</p>
+          <div className="mt-4 px-6 py-2 bg-blue-500/10 backdrop-blur-xl border border-blue-500/30 rounded-full inline-flex items-center gap-2">
+            <Zap size={16} className="text-yellow-400 fill-yellow-400" />
+            <p className="text-blue-200 text-xs sm:text-lg font-black tracking-[0.2em] italic uppercase">冠军锦标赛</p>
+            <Zap size={16} className="text-yellow-400 fill-yellow-400" />
           </div>
         </div>
         
-        {/* 内容卡片 */}
-        <div className="premium-glass p-6 sm:p-10 rounded-[3rem] shadow-2xl w-full text-center border border-white/10 relative group overflow-hidden">
-          {/* 高分榜单样式 */}
+        {/* 内容交互区：高保真玻璃卡片 */}
+        <div className="premium-glass p-8 sm:p-12 rounded-[3.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] w-full text-center border-t border-white/20 relative group overflow-hidden">
+          {/* 内部装饰光 */}
+          <div className="absolute -top-24 -left-24 w-48 h-48 bg-blue-500/10 blur-[60px] rounded-full group-hover:bg-blue-500/20 transition-all duration-700"></div>
+          
           {highScore > 0 && (
-              <div className="mb-8 flex flex-col items-center">
-                  <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em] mb-1">当前最佳纪录</span>
-                  <div className="flex items-center gap-3 px-6 py-2 bg-slate-900/80 rounded-2xl border border-yellow-500/30 shadow-inner">
-                      <Star size={18} className="text-yellow-400 fill-yellow-400" />
-                      <span className="text-white text-xl font-black">第 {highScore} 关</span>
+              <div className="mb-10 flex flex-col items-center">
+                  <div className="text-[10px] text-slate-500 font-black uppercase tracking-[0.3em] mb-2">最高连胜纪录</div>
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-yellow-500/10 blur-xl rounded-full"></div>
+                    <div className="relative flex items-center gap-3 px-8 py-3 bg-slate-900/90 rounded-2xl border border-yellow-500/40 shadow-[inset_0_2px_10px_rgba(255,255,255,0.05)]">
+                        <Star size={20} className="text-yellow-400 fill-yellow-400" />
+                        <span className="text-white text-2xl font-black italic">第 {highScore} 关</span>
+                    </div>
                   </div>
               </div>
           )}
           
-          <div className="space-y-4">
-              {/* 3D 按钮样式 */}
+          <div className="space-y-6">
+              {/* 3D 深度按钮：简单模式 */}
               <button 
                 onClick={() => startGame(Difficulty.EASY)} 
-                className="group relative w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-5 rounded-2xl transition-all shadow-[0_8px_0_rgb(30,58,138)] hover:shadow-[0_6px_0_rgb(30,58,138)] active:translate-y-[4px] active:shadow-[0_4px_0_rgb(30,58,138)] flex items-center justify-center gap-4 text-xl sm:text-3xl"
+                className="group relative w-full perspective-1000"
               >
-                  <div className="p-1.5 bg-white/20 rounded-lg group-hover:scale-110 transition-transform">
-                    <Target size={24} />
+                <div className="relative bg-blue-700 rounded-2xl transition-all duration-100 group-hover:bg-blue-600 group-active:translate-y-2">
+                  <div className="absolute inset-0 bg-blue-900 translate-y-2 rounded-2xl -z-10"></div>
+                  <div className="flex items-center justify-center gap-4 py-5 px-6 border-t border-white/20 rounded-2xl shadow-xl">
+                    <div className="p-2 bg-white/10 rounded-xl">
+                      <ShieldCheck className="text-white" size={24} />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-white text-xl sm:text-2xl font-black">简单模式</div>
+                      <div className="text-blue-200 text-[10px] font-bold opacity-60">新手上路 (1-5)</div>
+                    </div>
+                    <Play size={20} className="ml-auto text-white opacity-40 group-hover:opacity-100 transition-opacity" />
                   </div>
-                  简单模式 <span className="text-sm font-normal text-blue-200 opacity-70">(1-5)</span>
+                </div>
               </button>
 
+              {/* 3D 深度按钮：挑战模式 */}
               <button 
                 onClick={() => startGame(Difficulty.HARD)} 
-                className="group relative w-full bg-slate-800 hover:bg-slate-700 text-white font-black py-5 rounded-2xl transition-all shadow-[0_8px_0_rgb(30,41,59)] hover:shadow-[0_6px_0_rgb(30,41,59)] active:translate-y-[4px] active:shadow-[0_4px_0_rgb(30,41,59)] flex items-center justify-center gap-4 text-xl sm:text-3xl"
+                className="group relative w-full perspective-1000"
               >
-                  <div className="p-1.5 bg-red-500/20 rounded-lg group-hover:scale-110 transition-transform">
-                    <Flame className="text-red-400" size={24} />
+                <div className="relative bg-slate-700 rounded-2xl transition-all duration-100 group-hover:bg-slate-600 group-active:translate-y-2">
+                  <div className="absolute inset-0 bg-slate-900 translate-y-2 rounded-2xl -z-10"></div>
+                  <div className="flex items-center justify-center gap-4 py-5 px-6 border-t border-white/10 rounded-2xl shadow-xl">
+                    <div className="p-2 bg-red-500/20 rounded-xl">
+                      <Flame className="text-red-400" size={24} />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-white text-xl sm:text-2xl font-black">挑战模式</div>
+                      <div className="text-slate-300 text-[10px] font-bold opacity-60">巅峰对决 (1-9)</div>
+                    </div>
+                    <Zap size={20} className="ml-auto text-white opacity-40 group-hover:text-yellow-400 transition-all" />
                   </div>
-                  挑战模式 <span className="text-sm font-normal text-slate-400 opacity-70">(1-9)</span>
+                </div>
               </button>
           </div>
           
-          {/* 装饰文字 */}
-          <div className="mt-8 flex items-center justify-center gap-2 opacity-30">
-            <div className="h-px w-8 bg-white/50"></div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white">Arcade Edition</p>
-            <div className="h-px w-8 bg-white/50"></div>
+          {/* 版权装饰 */}
+          <div className="mt-10 pt-8 border-t border-white/5 flex flex-col items-center gap-3 opacity-30">
+            <p className="text-[9px] font-black uppercase tracking-[0.4em] text-white">ARCADE CLASSIC</p>
+            <div className="flex gap-4">
+               <div className="w-1 h-1 bg-white rounded-full"></div>
+               <div className="w-1 h-1 bg-white rounded-full"></div>
+               <div className="w-1 h-1 bg-white rounded-full"></div>
+            </div>
           </div>
         </div>
 
-        {/* 底部装饰 */}
-        <div className="mt-12 flex gap-8 opacity-20">
-          <Zap size={32} />
-          <Swords size={32} />
-          <Trophy size={32} />
+        {/* 底部点缀：竞技氛围 */}
+        <div className="mt-12 flex justify-between w-full px-4 opacity-10">
+          <Swords size={40} className="transform rotate-12" />
+          <Target size={40} className="transform -rotate-12 animate-pulse" />
         </div>
       </div>
     </div>
